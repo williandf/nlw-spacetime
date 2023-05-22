@@ -1,18 +1,18 @@
 import { EmptyMemories } from '@/components/EmptyMemories'
 import { api } from '@/lib/api'
-import dayjs from 'dayjs'
-import ptBr from 'dayjs/locale/pt-br'
-import { ArrowRight } from 'lucide-react'
 import { cookies } from 'next/headers'
+import dayjs from 'dayjs'
+import ptBR from 'dayjs/locale/pt-br'
 import Image from 'next/image'
 import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
 
-dayjs.locale(ptBr)
+dayjs.locale(ptBR)
 
 interface Memory {
   id: string
-  except: string
   coverUrl: string
+  excerpt: string
   createdAt: string
 }
 
@@ -24,6 +24,7 @@ export default async function Home() {
   }
 
   const token = cookies().get('token')?.value
+
   const response = await api.get('/memories', {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -48,13 +49,12 @@ export default async function Home() {
               src={memory.coverUrl}
               alt=""
               width={592}
-              height={580}
+              height={280}
               className="aspect-video w-full rounded-lg object-cover"
             />
             <p className="text-lg leading-relaxed text-gray-100">
-              {memory.except}
+              {memory.excerpt}
             </p>
-
             <Link
               href={`/memories/${memory.id}`}
               className="flex items-center gap-2 text-sm text-gray-200 hover:text-gray-100"

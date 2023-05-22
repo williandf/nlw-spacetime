@@ -3,12 +3,13 @@
 import { Camera } from 'lucide-react'
 import { MediaPicker } from './MediaPicker'
 import { FormEvent } from 'react'
-import Cokkie from 'js-cookie'
 import { api } from '@/lib/api'
+import Cookie from 'js-cookie'
 import { useRouter } from 'next/navigation'
 
 export function NewMemoryForm() {
   const router = useRouter()
+
   async function handleCreateMemory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -27,7 +28,7 @@ export function NewMemoryForm() {
       coverUrl = uploadResponse.data.fileUrl
     }
 
-    const token = Cokkie.get('token')
+    const token = Cookie.get('token')
 
     await api.post(
       '/memories',
@@ -66,7 +67,7 @@ export function NewMemoryForm() {
             name="isPublic"
             id="isPublic"
             value="true"
-            className="h-4 w-4 rounded border-gray-400 bg-gray-700 text-purple-500 "
+            className="h-4 w-4 rounded border-gray-400 bg-gray-700 text-purple-500"
           />
           Tornar memória pública
         </label>

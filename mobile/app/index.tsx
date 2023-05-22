@@ -1,25 +1,25 @@
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
-import { useAuthRequest, makeRedirectUri } from 'expo-auth-session'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import * as SecureStore from 'expo-secure-store'
-import { api } from '../src/lib/api'
 
 import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
+import { api } from '../src/lib/api'
+
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint:
+    'https://github.com/settings/connections/applications/d26f194cc5d5132a51be',
+}
 
 export default function App() {
   const router = useRouter()
 
-  const discovery = {
-    authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-    tokenEndpoint: 'https://github.com/login/oauth/access_token',
-    revocationEndpoint:
-      'https://github.com/settings/connections/applications/98a0876b8d6bee6c818b',
-  }
-
   const [, response, signInWithGithub] = useAuthRequest(
     {
-      clientId: '98a0876b8d6bee6c818b',
+      clientId: 'd26f194cc5d5132a51be',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
         scheme: 'nlwspacetime',
@@ -28,10 +28,11 @@ export default function App() {
     discovery,
   )
 
-  async function handleGithubOauthCode(code: string) {
+  async function handleGithubOAuthCode(code: string) {
     const response = await api.post('/register', {
       code,
     })
+
     const { token } = response.data
 
     await SecureStore.setItemAsync('token', token)
@@ -40,15 +41,22 @@ export default function App() {
   }
 
   useEffect(() => {
+    // console.log(
+    //   'response',
+    //   makeRedirectUri({
+    //     scheme: 'nlwspacetime',
+    //   }),
+    // )
+
     if (response?.type === 'success') {
       const { code } = response.params
 
-      handleGithubOauthCode(code)
+      handleGithubOAuthCode(code)
     }
   }, [response])
 
   return (
-    <View className="flex-1 items-center px-8 py-8">
+    <View className="flex-1 items-center px-8 py-10">
       <View className="flex-1 items-center justify-center gap-6">
         <NLWLogo />
 
@@ -61,15 +69,14 @@ export default function App() {
             quiser) com o mundo!
           </Text>
         </View>
+
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-2"
+          onPress={() => signInWithGithub()}
         >
-          <Text
-            className="font-alt text-sm uppercase text-black"
-            onPress={() => signInWithGithub()}
-          >
-            COMEÇAR A CADASTRAR
+          <Text className="font-alt text-sm uppercase text-black">
+            Cadastrar lembrança
           </Text>
         </TouchableOpacity>
       </View>

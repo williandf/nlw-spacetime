@@ -1,16 +1,16 @@
 import {
+  Image,
+  ScrollView,
   Switch,
-  TouchableOpacity,
-  View,
   Text,
   TextInput,
-  ScrollView,
-  Image,
+  TouchableOpacity,
+  View,
 } from 'react-native'
 import Icon from '@expo/vector-icons/Feather'
-import { Link, useRouter } from 'expo-router'
 
 import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
+import { Link, useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
@@ -22,8 +22,9 @@ export default function NewMemory() {
   const router = useRouter()
 
   const [preview, setPreview] = useState<string | null>(null)
-  const [isPublic, setIsPublic] = useState(false)
+
   const [content, setContent] = useState('')
+  const [isPublic, setIsPublic] = useState(false)
 
   async function openImagePicker() {
     try {
@@ -31,11 +32,12 @@ export default function NewMemory() {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
       })
+
       if (result.assets[0]) {
         setPreview(result.assets[0].uri)
       }
     } catch (err) {
-      console.log(err)
+      // deu erro mas eu não tratei
     }
   }
 
@@ -48,9 +50,9 @@ export default function NewMemory() {
       const uploadFormData = new FormData()
 
       uploadFormData.append('file', {
-        name: 'image.jpg',
-        type: 'image/jpeg',
         uri: preview,
+        name: 'image.jpg',
+        type: 'image/jpg',
       } as any)
 
       const uploadResponse = await api.post('/upload', uploadFormData, {
@@ -61,6 +63,7 @@ export default function NewMemory() {
 
       coverUrl = uploadResponse.data.fileUrl
     }
+
     await api.post(
       '/memories',
       {
@@ -85,9 +88,10 @@ export default function NewMemory() {
     >
       <View className="mt-4 flex-row items-center justify-between">
         <NLWLogo />
+
         <Link href="/memories" asChild>
           <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-purple-500">
-            <Icon name="arrow-left" size={16} color="#FFF" />
+            <Icon name="arrow-left" size={16} color="#fff" />
           </TouchableOpacity>
         </Link>
       </View>
@@ -108,18 +112,17 @@ export default function NewMemory() {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={openImagePicker}
-          className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-100 bg-black/20"
+          className="h-32 items-center justify-center rounded-lg border border-dashed border-gray-500 bg-black/20"
         >
           {preview ? (
             <Image
               source={{ uri: preview }}
-              alt=""
               className="h-full w-full rounded-lg object-cover"
             />
           ) : (
             <View className="flex-row items-center gap-2">
-              <Icon name="image" color="#FFF" />
-              <Text className="font-body text-sm text-gray-200">
+              <Icon name="image" color="#fff" />
+              <Text className="text-sm font-bold text-gray-200">
                 Adicionar foto ou vídeo de capa
               </Text>
             </View>
@@ -133,14 +136,15 @@ export default function NewMemory() {
           textAlignVertical="top"
           className="p-0 font-body text-lg text-gray-50"
           placeholderTextColor="#56565a"
-          placeholder="Fique livre para adicionar fotos, vídeos e relatos sobre essa experiência que você quer lembrar para sempre"
+          placeholder="Fique livre para adicionar fotos, vídeos e relatos sobre essa experiência que você quer lembrar para sempre."
         />
+
         <TouchableOpacity
-          onPress={handleCreateMemory}
           activeOpacity={0.7}
-          className=" items-center self-end rounded-full bg-green-500 px-5 py-2"
+          onPress={handleCreateMemory}
+          className="items-center self-end rounded-full bg-green-500 px-5 py-2"
         >
-          <Text className="font-alt text-sm uppercase text-black">SALVAR</Text>
+          <Text className="font-alt text-sm uppercase text-black">Salvar</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
